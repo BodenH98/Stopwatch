@@ -82,6 +82,16 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onDestroy: ")
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("Switched",true)
+        outState.putLong("Time", time)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        Boolean Switched = outState.getBoolean(Switched)
+        super.onRestoreInstanceState(savedInstanceState)
+    }
 
 
     private fun wireWidgets(){
