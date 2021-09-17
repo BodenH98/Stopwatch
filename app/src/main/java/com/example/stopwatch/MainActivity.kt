@@ -1,25 +1,24 @@
 package com.example.stopwatch
 
-import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
 import android.widget.Button
 import android.widget.Chronometer
-import android.widget.Switch
 import androidx.constraintlayout.widget.ConstraintLayout
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     companion object{
         val TAG = "MainActivity"
+        val BUNDLE_SWITCHED = "switched"
+        val BUNDLE_TIME = "time"
     }
     lateinit var startButton: Button
     lateinit var resetButton: Button
     lateinit var timer:Chronometer
     lateinit var layout: ConstraintLayout
-    var Switched: Boolean = false
+    var switched: Boolean = false
     var time = 0L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         wireWidgets()
 
     startButton.setOnClickListener{
-        if(Switched){
+        if(switched){
             timer.stop()
             time = SystemClock.elapsedRealtime() - timer.base
             startButton.text = "Resume"
@@ -38,16 +37,16 @@ class MainActivity : AppCompatActivity() {
             timer.base = SystemClock.elapsedRealtime() - time
             startButton.text = "stop"
         }
-        Switched = !Switched
+        switched = !switched
     }
 
     resetButton.setOnClickListener {
-        if(Switched){
+        if(switched){
             startButton.callOnClick()
         }
         time = 0L
         timer.base = SystemClock.elapsedRealtime()
-        Switched = !Switched
+        switched = !switched
     }
 
     }
@@ -83,14 +82,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean("Switched",true)
-        outState.putLong("Time", time)
         super.onSaveInstanceState(outState)
+        if(switched){
+            time = SystemClock.elapsedRealtime() - timer.base
+        }
+        outState.putBoolean(BUNDLE_SWITCHED,switched)
+        outState.putLong(BUNDLE_TIME, time)
+
+
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        Boolean Switched = outState.getBoolean(Switched)
         super.onRestoreInstanceState(savedInstanceState)
+        switched = savedInstanceState.getBoolean(BUNDLE_SWITCHED)
+        time = savedInstanceState.getLong(BUNDLE_TIME)
+        timer.base = SystemClock.elapsedRealtime() - time
+        if(switched){
+            timer.start()
+            startButton.text = "stop"
+        }
     }
 
 
